@@ -69,7 +69,7 @@ keys = [
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
     Key(
         [mod],
         "f",
@@ -134,7 +134,7 @@ layouts = [
     # layout.Stack(num_stacks=2),
     # layout.Bsp(),
     # layout.Matrix(),
-    layout.MonadTall(),
+    layout.MonadTall(margin=8, border_width=2, border_focus='3d59a1', border_normal='101014'),
     # layout.MonadWide(),
     # layout.RatioTile(),
     # layout.Tile(),
@@ -151,33 +151,41 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
+mybar = bar.Bar(
+    [
+        widget.CurrentLayout(),
+        widget.GroupBox(),
+        widget.Prompt(),
+        widget.WindowName(),
+        widget.Chord(
+            chords_colors={
+                "launch": ("#ff0000", "#ffffff"),
+            },
+            name_transform=lambda name: name.upper(),
+        ),
+        # widget.TextBox("default config", name="default"),
+        # widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
+        widget.Volume(),
+        # NB Systray is incompatible with Wayland, consider using StatusNotifier instead
+        # widget.StatusNotifier(),
+        widget.Systray(),
+        widget.Clock(format="%Y-%m-%d %a %I:%M %p"),
+        widget.QuickExit(),
+    ],
+    24,
+    # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
+    # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
+)
+
+@hook.subscribe.startup
+def set_qtile_bar_properties():
+    mybar.window.window.set_property("QTILE_BAR", 1, "CARDINAL", 32)
+    #mybar.window.window.set_property("_NET_WM_STRUT", (0, 24, 0, 0))  # Adjust the strut values for top position
+    #mybar.window.window.set_property("_NET_WM_STRUT_PARTIAL", (0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 1920, 0))
+
 screens = [
     Screen(
-        top=bar.Bar(
-            [
-                widget.CurrentLayout(),
-                widget.GroupBox(),
-                widget.Prompt(),
-                widget.WindowName(),
-                widget.Chord(
-                    chords_colors={
-                        "launch": ("#ff0000", "#ffffff"),
-                    },
-                    name_transform=lambda name: name.upper(),
-                ),
-                # widget.TextBox("default config", name="default"),
-                # widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
-                widget.Volume(),
-                # NB Systray is incompatible with Wayland, consider using StatusNotifier instead
-                # widget.StatusNotifier(),
-                widget.Systray(),
-                widget.Clock(format="%Y-%m-%d %a %I:%M %p"),
-                widget.QuickExit(),
-            ],
-            24,
-            # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
-            # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
-        ),
+        top=mybar
         # You can uncomment this variable if you see that on X11 floating resize/moving is laggy
         # By default we handle these events delayed to already improve performance, however your system might still be struggling
         # This variable is set to None (no cap) by default, but you can set it to 60 to indicate that you limit it to 60 events per second
