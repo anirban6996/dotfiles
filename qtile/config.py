@@ -70,6 +70,7 @@ keys = [
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod], "w", lazy.spawn("brave"), desc="Launch Brave"),
     Key(
         [mod],
         "f",
@@ -134,7 +135,7 @@ layouts = [
     # layout.Stack(num_stacks=2),
     # layout.Bsp(),
     # layout.Matrix(),
-    layout.MonadTall(margin=8, border_width=2, border_focus='3d59a1', border_normal='101014'),
+    layout.MonadTall(margin=8, border_width=2, border_focus='#bb9af7', border_normal='#333333'),
     # layout.MonadWide(),
     # layout.RatioTile(),
     # layout.Tile(),
@@ -154,8 +155,9 @@ extension_defaults = widget_defaults.copy()
 mybar = bar.Bar(
     [
         widget.CurrentLayout(),
-        widget.GroupBox(),
+        widget.GroupBox(inactive='#b8c0ff',this_current_screen_border='#bb9af7'),
         widget.Prompt(),
+        #widget.Spacer(length=650),    # Add a Spacer widget to create space
         widget.WindowName(),
         widget.Chord(
             chords_colors={
@@ -173,6 +175,8 @@ mybar = bar.Bar(
         widget.QuickExit(),
     ],
     24,
+    background="#14182f",  # Change the background color here
+    foreground="#FFFFFF",  # Change foreground color
     # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
     # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
 )
